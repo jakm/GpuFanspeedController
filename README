@@ -1,0 +1,8 @@
+Simple daemon to control GPU fan speed depending on temperature.
+
+Supported GPUs:
+  - ATI/AMD family
+
+Dependencies:
+  - Python 3
+  - Catalyst driver (aticonfig utility)
