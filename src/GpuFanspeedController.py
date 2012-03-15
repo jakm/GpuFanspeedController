@@ -15,7 +15,7 @@ import gfcontroller.core
 
 LOGGER = logging.getLogger('daemon')
 
-CONFIGFILE = 'gfcontroller.cfg'
+CONFIGFILE = '/etc/gfcontroller.cfg'
 
 DAEMON_SECTION = 'Daemon'
 DEVICE_SECTION = 'Device'
