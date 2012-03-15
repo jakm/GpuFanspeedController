@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #Copyright (c) 2012, Jakub Matys <matys.jakub@gmail.com>
 #All rights reserved.
 
@@ -8,7 +10,7 @@ import sys
 import time
 import traceback
 
-import gfcontroller.backends
+import gfcontroller.backends.base
 import gfcontroller.core
 
 LOGGER = logging.getLogger('daemon')
@@ -33,12 +35,15 @@ class DaemonError(Exception):
 
 def start_deamon():
     controllers, sleep = setup()
+    LOGGER.debug('Main loop')
+    LOGGER.debug('='*30)
     
     while(True):
         for controller in controllers:
             controller.control()
         
         LOGGER.debug('Going sleep')
+        LOGGER.debug('='*30)
         time.sleep(sleep)
 
 def setup():
@@ -48,7 +53,7 @@ def setup():
     if not config.has_section(DAEMON_SECTION):
         raise DaemonError('No Daemon section in config file.')
     
-    if len(section for section in config.sections() if section.startswith(DEVICE_SECTION)) == 0:
+    if len([section for section in config.sections() if section.startswith(DEVICE_SECTION)]) == 0:
         raise DaemonError('No Device section in config file.')
     
     if (config.has_option(DAEMON_SECTION, DEBUG_OPTION) and config.getboolean(DAEMON_SECTION, DEBUG_OPTION)):
@@ -62,7 +67,8 @@ def setup():
     if sleep <= 0:
         raise DaemonError('Invalid value of sleep option. Use integer > 0.')
     
-    LOGGER.debug('Sleep interval: ' + sleep)
+    LOGGER.debug('Sleep interval: ' + str(sleep))
+    LOGGER.debug('-'*30)
     
     controllers = get_controllers(config)
     
@@ -75,11 +81,13 @@ def get_controllers(config):
         if section == DAEMON_SECTION:
             continue
         
+        LOGGER.debug('Setting up section %s' %(section,))
+        
         tmp = section.split(':')
         if len(tmp) != 2:
             raise DaemonError('Error when parsing device device_id in section %s.' % (section,))
         
-        device_id = tmp[1].trim()
+        device_id = tmp[1].strip()
         
         device_name = None
         if config.has_option(section, NAME_OPTION):
@@ -107,29 +115,30 @@ def get_controllers(config):
         controllers.append(controller)
         
         LOGGER.debug('Added device: id=%s, backend=%s, min_speed=%s, limit_temp=%s, critical_temp=%s' %
-                     (device_id, backend_name, min_speed, limit_temp, critical_temp))
+                     (device_id, repr(backend), min_speed, limit_temp, critical_temp))
     
     return controllers
 
-def load_backend(self, module_name, class_name):
-    if module_name in sys.modules.keys():
-        module = sys.modules[module_name]
-    else:
-        module = __import__(module_name)
+def load_backend(module_name, class_name):
+    if not module_name in sys.modules.keys():
+        __import__(module_name)
     
-    return self.get_class(module, class_name)
+    module = sys.modules[module_name]
+    
+    return get_class(module, class_name)
 
-def get_class(self, module, class_name):
-    cls = self.get_class.cache.get((module, class_name), None)
+def get_class(module, class_name):
+    LOGGER.debug('Loading class %s in module %s' % (class_name, module.__name__))
+    cls = get_class.cache.get((module, class_name), None)
     if cls is None:
         try:
             cls = getattr(module, class_name)
-            if type(cls) is not type(object):
-                raise AttributeError
-            self.get_class.cache[module, class_name] = cls
+            if not issubclass(cls, gfcontroller.backends.base.GpuBackend):
+                raise DaemonError("Class %s is not subclass of GpuBackend" % (class_name,))
+            get_class.cache[module, class_name] = cls
         except AttributeError:
             raise DaemonError("Module %s doesn't contain class %s" % (module.__name__, class_name))
-        return cls
+    return cls
 get_class.cache = {}
 
 def main():
