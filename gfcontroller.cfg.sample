@@ -1,0 +1,20 @@
+# global daemon configuration
+[Daemon]
+sleep=10 # time to sleep main loop in seconds
+debug=false # print some debug information
+
+# devices section
+
+[Device:0] # device with id 0, id is driver dependent value
+name=TEST1 # optional device name
+backend=RADEON # defines device backend, symbolic names of backends defined in gfcontroller.backends.NAMES
+min_speed=40 # minimal controlled speed in %, daemon never go below
+limit_temp=39 # limit temperature in °C when daemon starts speed handling
+critical_temp=60 # critical temperature in °C when daemon sets speed to 100%
+
+#[Device:1]
+#name=TEST2
+#backend=TEST # test backend, used by test script
+#min_speed=40
+#limit_temp=39
+#critical_temp=60
