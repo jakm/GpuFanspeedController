@@ -1,16 +1,24 @@
 # global daemon configuration
 [Daemon]
-sleep=10 # time to sleep main loop in seconds
-debug=false # print some debug information
+# time to sleep main loop in seconds
+sleep=10
+# print some debug information
+debug=false
 
 # devices section
 
-[Device:0] # device with id 0, id is driver dependent value
-name=TEST1 # optional device name
-backend=RADEON # defines device backend, symbolic names of backends defined in gfcontroller.backends.NAMES
-min_speed=40 # minimal controlled speed in %, daemon never go below
-limit_temp=39 # limit temperature in °C when daemon starts speed handling
-critical_temp=60 # critical temperature in °C when daemon sets speed to 100%
+# device with id 0, id is driver dependent value
+[Device:0]
+# optional device name
+name=TEST1
+# defines device backend, symbolic names of backends defined in gfcontroller.backends.NAMES
+backend=RADEON
+# minimal controlled speed in %, daemon never go below
+min_speed=40
+# limit temperature in °C when daemon starts speed handling
+limit_temp=39
+# critical temperature in °C when daemon sets speed to 100%
+critical_temp=60
 
 #[Device:1]
 #name=TEST2
