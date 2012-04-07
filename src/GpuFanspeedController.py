@@ -13,6 +13,8 @@ import traceback
 import gfcontroller.backends.base
 import gfcontroller.core
 
+from gfcontroller.backends import BackendError
+
 LOGGER = logging.getLogger('daemon')
 
 CONFIGFILE = '/etc/gfcontroller.cfg'
@@ -56,7 +58,7 @@ def setup():
     if len([section for section in config.sections() if section.startswith(DEVICE_SECTION)]) == 0:
         raise DaemonError('No Device section in config file.')
     
-    if (config.has_option(DAEMON_SECTION, DEBUG_OPTION) and config.getboolean(DAEMON_SECTION, DEBUG_OPTION)):
+    if (config.has_option(DAEMON_SECTION, DEBUG_OPTION) and config.getboolean(DAEMON_SECTION, DEBUG_OPTION) == True):
         logging.root.setLevel(logging.DEBUG)
     
     if not config.has_option(DAEMON_SECTION, SLEEP_OPTION):
@@ -144,10 +146,11 @@ get_class.cache = {}
 def main():
     try:
         start_deamon()
-    except DaemonError as e:
+    except (DaemonError, BackendError) as e:
+        msg = str(e.__class__) + ': ' + str(e)
         logging.error(str(e))
     except Exception as e:
-        msg = 'Unhandled exception occured: ' + str(e)
+        msg = 'Unhandled exception occured!\n' + str(e.__class__) + ': ' + str(e)
         logging.error(msg)
         buf = io.StringIO()
         traceback.print_exc(file=buf)
