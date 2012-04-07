@@ -153,6 +153,8 @@ def main():
     except (DaemonError, BackendError) as e:
         msg = str(e.__class__) + ': ' + str(e)
         logging.error(str(e))
+    except KeyboardInterrupt:
+        pass
     except Exception as e:
         msg = 'Unhandled exception occured!\n' + str(e.__class__) + ': ' + str(e)
         logging.error(msg)
