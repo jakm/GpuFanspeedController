@@ -6,6 +6,7 @@
 import configparser
 import io
 import logging
+import os.path
 import sys
 import time
 import traceback
@@ -49,6 +50,9 @@ def start_deamon():
         time.sleep(sleep)
 
 def setup():
+    if not os.path.exists(CONFIGFILE):
+        raise DaemonError('Config file %s does not exist.' % CONFIGFILE)
+    
     config = configparser.ConfigParser()
     config.read(CONFIGFILE)
     
@@ -93,7 +97,7 @@ def get_controllers(config):
         
         device_name = None
         if config.has_option(section, NAME_OPTION):
-            device_name = config.has_option(section, NAME_OPTION)
+            device_name = config.get(section, NAME_OPTION)
         
         for option in (BACKEND_OPTION, MIN_SPEED_OPTION, LIMIT_TEMP_OPTION, CRITICAL_TEMP_OPTION):
             if not config.has_option(section, option):
@@ -157,4 +161,14 @@ def main():
         logging.error(buf.getvalue())
 
 if __name__ == '__main__':
+    from optparse import OptionParser
+    
+    parser = OptionParser()
+    parser.add_option('-c', '--config-file', dest='configfile', help='use configuration file FILE', metavar='FILE', default=CONFIGFILE)
+    
+    (options,args) = parser.parse_args()
+    
+    if options.configfile:
+        CONFIGFILE = options.configfile
+    
     main()
