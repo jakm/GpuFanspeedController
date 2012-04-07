@@ -8,7 +8,7 @@ import subprocess
 from gfcontroller.backends import BackendError
 from gfcontroller.backends.base import GpuBackend
 
-class NvidiaBackend(GpuBackend):
+class RadeonBackend(GpuBackend):
     def __init__(self, device_id, device_name=None):
         self._device_id = device_id
         self._device_name = device_name if device_name else str(device_id)
