@@ -120,8 +120,7 @@ def get_controllers(config):
         
         controllers.append(controller)
         
-        LOGGER.debug('Added device: id=%s, backend=%s, min_speed=%s, limit_temp=%s, critical_temp=%s' %
-                     (device_id, repr(backend), min_speed, limit_temp, critical_temp))
+        LOGGER.debug('Added device: id=%s, backend=%s' % (device_id, repr(backend)))
     
     return controllers
 

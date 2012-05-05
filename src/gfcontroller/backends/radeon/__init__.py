@@ -52,7 +52,7 @@ class RadeonBackend(GpuBackend):
     
     def _set_fanspeed(self, value):
         if not (0 < value <= 100):
-            raise ValueError('Use value of speed between 0 and 100 %')
+            raise ValueError('Correct value of speed is between 0 and 100 %%, value %d was given.' % (value,))
 
         args = self.__get_args_with_fanspeed(value)
         returned_data = self.__exec_cmd(args)
