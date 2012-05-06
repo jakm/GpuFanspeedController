@@ -26,9 +26,10 @@ SLEEP_OPTION = 'sleep'
 DEBUG_OPTION = 'debug'
 NAME_OPTION = 'name'
 BACKEND_OPTION = 'backend'
-MIN_SPEED_OPTION = 'min_speed'
-LIMIT_TEMP_OPTION = 'limit_temp'
-CRITICAL_TEMP_OPTION = 'critical_temp'
+LOWEST_SPEED_OPTION = 'lowest_speed'
+HIGHEST_SPEED_OPTION = 'highest_speed'
+LOWEST_TEMP_OPTION = 'lowest_temp'
+HIGHEST_TEMP_OPTION = 'highest_temp'
 
 class DaemonError(Exception):
     def __init__(self, value):
@@ -87,7 +88,7 @@ def get_controllers(config):
         if section == DAEMON_SECTION:
             continue
         
-        LOGGER.debug('Setting up section %s' %(section,))
+        LOGGER.info('Setting up section %s' %(section,))
         
         tmp = section.split(':')
         if len(tmp) != 2:
@@ -99,7 +100,7 @@ def get_controllers(config):
         if config.has_option(section, NAME_OPTION):
             device_name = config.get(section, NAME_OPTION)
         
-        for option in (BACKEND_OPTION, MIN_SPEED_OPTION, LIMIT_TEMP_OPTION, CRITICAL_TEMP_OPTION):
+        for option in (BACKEND_OPTION, LOWEST_SPEED_OPTION, LOWEST_TEMP_OPTION, HIGHEST_TEMP_OPTION):
             if not config.has_option(section, option):
                 raise DaemonError("Device section %s doesn't contain %s option." %(section, option))
         
@@ -111,16 +112,17 @@ def get_controllers(config):
         backend_module = 'gfcontroller.backends.' + backend_module
         backend = load_backend(backend_module, backend_class)
         
-        min_speed = config.getint(section, MIN_SPEED_OPTION)
-        limit_temp = config.getint(section, LIMIT_TEMP_OPTION)
-        critical_temp = config.getint(section, CRITICAL_TEMP_OPTION)
+        lowest_speed = config.getint(section, LOWEST_SPEED_OPTION)
+        highest_speed = config.getint(section, HIGHEST_SPEED_OPTION)
+        lowest_temp = config.getint(section, LOWEST_TEMP_OPTION)
+        highest_temp = config.getint(section, HIGHEST_TEMP_OPTION)
         
         controller = gfcontroller.core.GpuFanspeedController(backend(device_id, device_name))
-        controller.initialize(min_speed, limit_temp, critical_temp)
+        controller.initialize(lowest_speed, highest_speed, lowest_temp, highest_temp)
         
         controllers.append(controller)
         
-        LOGGER.debug('Added device: id=%s, backend=%s' % (device_id, repr(backend)))
+        LOGGER.info('Added device: id=%s, backend=%s' % (device_id, repr(backend)))
     
     return controllers
 
@@ -155,7 +157,7 @@ def main():
     except KeyboardInterrupt:
         pass
     except Exception as e:
-        msg = 'Unhandled exception occured!\n' + str(e.__class__) + ': ' + str(e)
+        msg = 'An unhandled exception occured!\n' + str(e.__class__) + ': ' + str(e)
         logging.error(msg)
         buf = io.StringIO()
         traceback.print_exc(file=buf)

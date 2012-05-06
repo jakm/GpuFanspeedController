@@ -16,40 +16,47 @@ class GpuFanspeedController:
 
         self._backend = backend
     
-    def initialize(self, min_speed, limit_temp, critical_temp):
-        self._min_speed = min_speed
-        self._limit_temp = limit_temp
-        self._critical_temp = critical_temp
+    def initialize(self, lowest_speed, highest_speed, lowest_temp, highest_temp):
+        self._lowest_speed = lowest_speed
+        self._highest_speed = highest_speed
+        self._lowest_temp = lowest_temp
+        self._highest_temp = highest_temp
         
-        self._temp_to_speed_ratio = (MAX_SPEED - self._min_speed) / (self._critical_temp - self._limit_temp)
+        self._temp_to_speed_ratio = (self._highest_speed - self._lowest_speed) / (self._highest_temp - self._lowest_temp)
         
         self._last_temp = self._backend.temperature
         
-        LOGGER.debug('Controller initialized: min_speed = %d, limit_temp = %d, critical_temp = %d,'
-                     ' temp_to_speed_ratio = %d, last_temp = %d'
-                     % (self._min_speed, self._limit_temp, self._critical_temp, self._temp_to_speed_ratio, self._last_temp))
+        LOGGER.info('Controller initialized: lowest_speed = %d, highest_speed = %d, lowest_temp = %d, highest_temp = %d,'
+                     ' temp_to_speed_ratio = %f, last_temp = %d'
+                     % (self._lowest_speed, self._highest_speed, self._lowest_temp, self._highest_temp, 
+                        self._temp_to_speed_ratio, self._last_temp))
     
     @property
-    def min_speed(self):
-        return self._min_speed
+    def lowest_speed(self):
+        return self._lowest_speed
     
     @property
-    def limit_temp(self):
-        return self._limit_temp
+    def highest_speed(self):
+        return self._highest_speed
     
     @property
-    def critical_temp(self):
-        return self._critical_temp
+    def lowest_temp(self):
+        return self._lowest_temp
+    
+    @property
+    def highest_temp(self):
+        return self._highest_temp
 
     def control(self):
         actual_temp = self._backend.temperature
         actual_speed = self._backend.fanspeed
         
-        if actual_temp < self._limit_temp:
-            new_speed = self._min_speed
-        elif self._limit_temp <= actual_temp < self._critical_temp:
-            new_speed = actual_temp * self._temp_to_speed_ratio
-        elif actual_temp >= self._critical_temp:
+        if actual_temp < self._lowest_temp:
+            new_speed = self._lowest_speed
+        elif self._lowest_temp <= actual_temp <= self._highest_temp:
+            temp_diff = actual_temp - self._lowest_temp
+            new_speed = self._lowest_speed + self._temp_to_speed_ratio * temp_diff
+        elif actual_temp > self._highest_temp:
             new_speed = CRITICAL_SPEED
         
         LOGGER.debug('Controlling: device = %s, last_temp = %d, last_speed = %d, actual_temp = %d, new_speed = %f'

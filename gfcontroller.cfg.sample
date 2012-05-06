@@ -14,15 +14,18 @@ name=TEST1
 # defines device backend, symbolic names of backends defined in gfcontroller.backends.NAMES
 backend=RADEON
 # minimal controlled speed in %, daemon never go below
-min_speed=40
-# limit temperature in °C when daemon starts speed handling
-limit_temp=39
-# critical temperature in °C when daemon sets speed to 100%
-critical_temp=60
+lowest_speed=40
+# highest controlled speed in %, it corresponds to the highest_temp
+highest_speed=75
+# lower limit of temperature in °C when daemon starts speed handling
+lowest_temp=39
+# upper limit of temperature in °C, if this limit is exceeded the daemon will set speed to 100%
+highest_temp=60
 
 #[Device:1]
 #name=TEST2
-#backend=TEST # test backend, used by test script
+# test backend, used by test script
+#backend=TEST
 #min_speed=40
 #limit_temp=39
 #critical_temp=60
