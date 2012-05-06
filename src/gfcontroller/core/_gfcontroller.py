@@ -48,20 +48,7 @@ class GpuFanspeedController:
         if actual_temp < self._limit_temp:
             new_speed = self._min_speed
         elif self._limit_temp <= actual_temp < self._critical_temp:
-            # TODO: this isn't nice computation, we have a lot of special conditions here - make it better!!! 
-            
-            temp_increment = (actual_temp * 100 / self._last_temp) - 100
-            speed_increment = temp_increment * self._temp_to_speed_ratio
-            
-            # when temperature is increasing we will increase speed too
-            # when temperature is stagnating or is descending we will keep speed until temperature will fall to limit
-            new_speed = actual_speed + speed_increment if speed_increment > 0 else actual_speed
-            
-            # new_speed could be lower then _minspeed when _last_temp was lower then _limit_temp at initialization
-            new_speed = self._min_speed if new_speed < self._min_speed else new_speed
-            
-            # new_speed could be higher then 100%, for example when we have 99% of speed and temperature increased from 48°C to 55°C
-            new_speed = CRITICAL_SPEED if new_speed > CRITICAL_SPEED else new_speed
+            new_speed = actual_temp * self._temp_to_speed_ratio
         elif actual_temp >= self._critical_temp:
             new_speed = CRITICAL_SPEED
         
