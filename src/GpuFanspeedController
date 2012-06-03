@@ -7,6 +7,7 @@ import configparser
 import io
 import logging
 import os.path
+import signal
 import sys
 import time
 import traceback
@@ -32,6 +33,12 @@ LOWEST_TEMP_OPTION = 'lowest_temp'
 HIGHEST_TEMP_OPTION = 'highest_temp'
 
 class DaemonError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+class RestartException(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -148,20 +155,32 @@ def get_class(module, class_name):
     return cls
 get_class.cache = {}
 
+def signal_handler(signum, frame):
+    if (signum == signal.SIGTERM):
+        LOGGER.info('SIGTERM received, exiting.')
+        sys.exit(0)
+    elif (signum == signal.SIGHUP):
+        LOGGER.info('SIGHUP received, restarting daemon.')
+        raise RestartException
+
 def main():
     try:
-        start_deamon()
-    except (DaemonError, BackendError) as e:
-        msg = str(e.__class__) + ': ' + str(e)
-        logging.error(str(e))
+        while(True):
+            try:
+                start_deamon()
+            except RestartException:
+                pass
     except KeyboardInterrupt:
         pass
+    except (DaemonError, BackendError) as e:
+        msg = str(e.__class__) + ': ' + str(e)
+        LOGGER.error(str(e))
     except Exception as e:
         msg = 'An unhandled exception occured!\n' + str(e.__class__) + ': ' + str(e)
-        logging.error(msg)
+        LOGGER.error(msg)
         buf = io.StringIO()
         traceback.print_exc(file=buf)
-        logging.error(buf.getvalue())
+        LOGGER.error(buf.getvalue())
 
 if __name__ == '__main__':
     from optparse import OptionParser
@@ -173,5 +192,8 @@ if __name__ == '__main__':
     
     if options.configfile:
         CONFIGFILE = options.configfile
+    
+    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGHUP, signal_handler)
     
     main()
