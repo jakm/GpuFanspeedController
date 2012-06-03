@@ -1,0 +1,9 @@
+[Unit]
+Description=Simple daemon to control GPU fan speed depending on temperature.
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart/usr/sbin/GpuFanspeedController
+StandardOutput=syslog
+Restart=always
