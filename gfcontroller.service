@@ -4,6 +4,6 @@ After=syslog.target
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/GpuFanspeedController
+ExecStart=/usr/local/sbin/GpuFanspeedController
 StandardOutput=syslog
 Restart=always
