@@ -22,10 +22,14 @@ lowest_temp=39
 # upper limit of temperature in °C, if this limit is exceeded the daemon will set speed to 100%
 highest_temp=60
 
+# second device
 #[Device:1]
 #name=TEST2
-# test backend, used by test script
 #backend=TEST
-#min_speed=40
-#limit_temp=39
-#critical_temp=60
+#lowest_speed=40
+#highest_speed=75
+#lowest_temp=39
+#highest_temp=60
+
+# third device
+# ...
