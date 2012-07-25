@@ -45,7 +45,7 @@ class RestartException(Exception):
         return repr(self.value)
 
 def setup_logging(logfile):
-    fmt = '[%(asctime)s] PID=%(process)d: %(levelname)s %(message)s'
+    fmt = '[%(asctime)s] PID=%(process)d: %(name)s %(levelname)s %(message)s'
     logging.basicConfig(format=fmt, level=logging.INFO, filename=logfile)
 
 def start_deamon():
