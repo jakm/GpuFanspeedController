@@ -15,6 +15,12 @@ class GpuFanspeedController:
         assert isinstance(backend, GpuBackend)
 
         self._backend = backend
+        self._lowest_speed = None
+        self._highest_speed = None
+        self._lowest_temp = None
+        self._highest_temp = None
+        self._temp_to_speed_ratio = None
+        self._last_temp = None
     
     def initialize(self, lowest_speed, highest_speed, lowest_temp, highest_temp):
         self._lowest_speed = lowest_speed

@@ -56,11 +56,11 @@ class NvidiaBackend(GpuBackend):
             self.__cmd_fail(returned_data)
     
     def __exec_cmd(self, cmd):
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
-        stdout = p.stdout.read().decode('utf8').strip()
-        stderr = p.stderr.read().decode('utf8').strip()
-        return (p.returncode, stdout, stderr)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        stdout = process.stdout.read().decode('utf8').strip()
+        stderr = process.stderr.read().decode('utf8').strip()
+        return (process.returncode, stdout, stderr)
     
     def __cmd_fail(self, returned_data):
         raise BackendError('nvidia-settings exited with code %d:\n%s\n\n' % (returned_data[0], returned_data[2]))

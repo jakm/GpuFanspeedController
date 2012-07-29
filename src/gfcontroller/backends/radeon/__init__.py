@@ -38,9 +38,9 @@ class RadeonBackend(GpuBackend):
     def _get_fanspeed(self):
         returned_data = self.__exec_cmd(self.__get_fanspeed_cmd)
         if returned_data[0] == 0:
-            m = self.__get_fanspeed_re.match(returned_data[1])
-            if m:
-                return int(m.groups()[0])
+            match = self.__get_fanspeed_re.match(returned_data[1])
+            if match:
+                return int(match.groups()[0])
             else:
                 msg = 'Error when getting actual fanspeed of adapter %s' % self.device_name
                 msg += "; DEBUG: Regular expression = r'" + self.__get_fanspeed_re.pattern + "'"
@@ -65,9 +65,9 @@ class RadeonBackend(GpuBackend):
     def temperature(self):
         returned_data = self.__exec_cmd(self.__get_temperature_cmd)
         if returned_data[0] == 0:
-            m = self.__get_temperature_re.match(returned_data[1])
-            if m:
-                return int(float(m.groups()[0]))
+            match = self.__get_temperature_re.match(returned_data[1])
+            if match:
+                return int(float(match.groups()[0]))
             else:
                 msg = 'Error when getting actual temperature of adapter %s' % self.device_name
                 msg += "; DEBUG: Regular expression = r'" + self.__get_temperature_re.pattern + "'"
@@ -77,11 +77,11 @@ class RadeonBackend(GpuBackend):
             self.__cmd_fail(returned_data)
     
     def __exec_cmd(self, cmd):
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
-        stdout = p.stdout.read().decode('utf8').strip()
-        stderr = p.stderr.read().decode('utf8').strip()
-        return (p.returncode, stdout, stderr)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        stdout = process.stdout.read().decode('utf8').strip()
+        stderr = process.stderr.read().decode('utf8').strip()
+        return (process.returncode, stdout, stderr)
     
     def __cmd_fail(self, returned_data):
         raise BackendError('Aticonfig exited with code %d:\n%s\n\n' % (returned_data[0], returned_data[2]))
