@@ -41,7 +41,7 @@ class RestartException(Exception):
         super(RestartException, self).__init__(*args)
 
 def setup_logging(logfile):
-    fmt = '[%(asctime)s] PID=%(process)d: %(levelname)s %(message)s'
+    fmt = '[%(asctime)s] PID=%(process)d: %(name)s %(levelname)s %(message)s'
     logging.basicConfig(format=fmt, level=logging.INFO, filename=logfile)
 
 def start_deamon():
@@ -204,7 +204,7 @@ def main():
             except RestartException:
                 pass
     except KeyboardInterrupt:
-        LOGGER.info('User pressed Ctr-C, exiting.')
+        LOGGER.info('User pressed Ctrl-C, exiting.')
     except (DaemonError, BackendError) as e:
         msg = str(e.__class__) + ': ' + str(e)
         LOGGER.error(str(e))
