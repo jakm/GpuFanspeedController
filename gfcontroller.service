@@ -1,3 +1,6 @@
+#Copyright (c) 2012, Jakub Matys <matys.jakub@gmail.com>
+#All rights reserved.
+
 [Unit]
 Description=Simple daemon to control GPU fan speed depending on temperature.
 After=graphical.target
