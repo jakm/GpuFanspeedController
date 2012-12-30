@@ -10,7 +10,7 @@ setup(name='GpuFanspeedController',
       description=('Simple daemon to control GPU fan '
                    'speed depending on temperature.'),
       author='Jakub Matys',
-      author_email='matys.jakub@gmial.com',
+      author_email='matys.jakub@gmail.com',
       license='BSD',
       url='https://github.com/jakm/GpuFanspeedController',
       install_requires=['python>=3.0'],
