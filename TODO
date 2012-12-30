@@ -1,4 +1,1 @@
 * Create nvidia backend
-* Implement daemon's systemd compatibility layer
-* Add systemd .service unit
-* Add setup script
