@@ -3,7 +3,7 @@
 #Copyright (c) 2012, Jakub Matys <matys.jakub@gmail.com>
 #All rights reserved.
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='GpuFanspeedController',
       version='0.2',
